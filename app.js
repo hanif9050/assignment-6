@@ -11,7 +11,7 @@ const sliderContainer = document.getElementById("sliders");
 const body = document.body;
 
 fetch(
-  `https://pixabay.com/api/?key=15674931-a9d714b6e9d654524df198e00&q=flower&image_type=photo&pretty=true`
+  `https://pixabay.com/api/?key=15674931-a9d714b6e9d654524df198e00&q=forest&image_type=photo&pretty=true`
 )
   .then((response) => response.json())
   .then((data) => backGround(data.hits))
@@ -41,12 +41,15 @@ const backGround = (para) => {
         } else if (num <= 0) {
           num = para.length - 1;
         }
-      }, 1000);
+      }, 5000);
       if(sliderBtn===onclick()){
         clearInterval(myTime)
         
       }
-      
+      // 
+      if(searchBtn===onclick){
+        body.location.reload()
+      }
      
     }
     // if(searchBtn===onclick()){
@@ -55,8 +58,18 @@ const backGround = (para) => {
 
     
   // })
+  
 };
 
+function spinner(show){
+  const loadingSpinner =document.getElementById("spinner");
+  if(show){
+    loadingSpinner.classList.remove('d-none');
+  }else{
+    loadingSpinner.classList.add('d-none');
+  }
+  
+}
 //end of try add new features
 
 // selected image
@@ -81,10 +94,11 @@ const showImages = (images) => {
     div.innerHTML = ` <img class="img-fluid img-thumbnail" onclick=selectItem(event,"${image.webformatURL}") src="${image.webformatURL}" alt="${image.tags}">`;
     gallery.appendChild(div);
   });
-  
+  spinner()
 };
 
 const getImages = (query) => {
+  spinner(true)
   fetch(
     `https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`
   )
@@ -93,6 +107,7 @@ const getImages = (query) => {
     .catch((err) => console.log(err));
     
 };
+
 
 let slideIndex = 0;
 const selectItem = (event, img) => {
@@ -182,14 +197,20 @@ document.getElementById("search").addEventListener("keypress", () => {
   }
 });
 searchBtn.addEventListener("click", function () {
+  if(search.value!=''){
+    document.querySelector(".main").style.display = "none";
+    clearInterval(timer);
+    const search = document.getElementById("search");
+    
+    getImages(search.value);
+    
+    sliders.length = 0;
+    search.value=''
+  }else{
+    alert("Invalid Search")
+  }
   
-  document.querySelector(".main").style.display = "none";
-  clearInterval(timer);
-  const search = document.getElementById("search");
   
-  getImages(search.value);
-  sliders.length = 0;
-  search.value=''
  
   
   
